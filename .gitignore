@@ -1,1 +1,9 @@
+# backend
 application.properties
+.gradle
+.idea
+build
+bin
+
+# frontend
+node_modules
