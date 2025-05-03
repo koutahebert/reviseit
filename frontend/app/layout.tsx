@@ -11,7 +11,7 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: "ReviseIt - Learn Smarter",
   description: "Turn your bookmarks into flashcards and quizzes",
-    generator: 'v0.dev'
+  generator: "v0.dev",
 }
 
 export default function RootLayout({

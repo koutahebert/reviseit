@@ -11,7 +11,7 @@ const Logo = () => (
   <span className="text-4xl font-bold tracking-tighter">
     Revise<span className="text-blue-500 dark:text-blue-400">It</span>
   </span>
-);
+)
 
 const navLinks = [
   { name: "Home", href: "/" },
@@ -24,7 +24,7 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center justify-between">
+      <div className="container flex h-16 items-center">
         <div className="flex items-center gap-2">
           <Link href="/" className="flex items-center space-x-2">
             {/* Replace Image with the text Logo component */}
@@ -32,31 +32,35 @@ export default function Header() {
           </Link>
         </div>
 
-        {/* Desktop navigation */}
-        <nav className="hidden md:flex md:gap-10">
+        {/* Desktop navigation - centered */}
+        <nav className="hidden md:flex md:gap-10 mx-auto justify-center">
           {navLinks.map((link) => (
-            <Link key={link.name} href={link.href} className="text-sm font-medium transition-colors hover:text-primary">
+            <Link
+              key={link.name}
+              href={link.href}
+              className="text-base font-medium transition-colors hover:text-primary relative py-2 px-1 hover:after:content-[''] hover:after:absolute hover:after:left-0 hover:after:bottom-0 hover:after:w-full hover:after:h-0.5 hover:after:bg-primary"
+            >
               {link.name}
             </Link>
           ))}
         </nav>
 
-        <div className="hidden items-center gap-2 md:flex">
-          <ThemeToggle />
-          <Button asChild>
+        <div className="flex items-center gap-2">
+          <ThemeToggle className="hidden md:flex" />
+          <Button asChild className="hidden md:flex border-2 border-primary">
             <Link href="/signup">Get Started</Link>
           </Button>
         </div>
 
         {/* Mobile menu button and theme toggle */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 md:hidden">
           <ThemeToggle />
           <Button
             variant="ghost"
             size="icon"
             aria-label="Toggle Menu"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden"
+            className="border-2 border-gray-300 dark:border-gray-700"
           >
             {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </Button>
@@ -71,13 +75,13 @@ export default function Header() {
               <Link
                 key={link.name}
                 href={link.href}
-                className="text-sm font-medium transition-colors hover:text-primary"
+                className="text-sm font-medium transition-colors hover:text-primary relative py-2 px-1 hover:after:content-[''] hover:after:absolute hover:after:left-0 hover:after:bottom-0 hover:after:w-full hover:after:h-0.5 hover:after:bg-primary"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {link.name}
               </Link>
             ))}
-            <Button asChild className="mt-2 w-full">
+            <Button asChild className="mt-2 w-full border-2 border-primary">
               <Link href="/signup">Get Started</Link>
             </Button>
           </div>
