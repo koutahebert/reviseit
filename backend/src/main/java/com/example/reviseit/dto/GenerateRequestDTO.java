@@ -11,12 +11,4 @@ public class GenerateRequestDTO {
 
   @NotEmpty(message = "Source text blocks cannot be empty")
   private List<String> sourceBlocks; // Renamed from chunks, added validation
-
-  @NotNull(message = "Flashcard set name cannot be null")
-  @NotEmpty(message = "Flashcard set name cannot be empty")
-  private String flashcardSetName;
-
-  @NotNull(message = "Quiz set name cannot be null")
-  @NotEmpty(message = "Quiz set name cannot be empty")
-  private String quizSetName;
 }

@@ -1,4 +1,3 @@
-
 #Docker Compose is a tool for defining and running multi-container Docker applications. 
 #With Docker Compose, you use a YAML file to configure your application's services, networks, volumes, and other resources.
 #This section defines the containers that make up your application. Each service represents a container with its configuration
@@ -26,7 +25,8 @@ services:  # Defines the services that make up the application
       - "8080:8080"  # Exposes port 8080 on the host and maps it to port 8080 in the container
     #Environment Variables: These are passed to the container at runtime. For example, DB_ADDRESS is set to jdbc:mysql://mysql:3306, indicating the application should connect to a MySQL database at the given JDBC URL.
     environment:  # Environment variables for the Spring application
-      - DB_ADDRESS=jdbc:mysql://database:3306  # JDBC URL for the MySQL database, 'mysql' is the service name in docker-compose
+      - DB_ADDRESS=database # Just the hostname/service name
+      - DB_PORT=3306 # Define the port separately (optional, as it's the default)
       - DB_DATABASE=template_db  # The name of the database to use
       - DB_USER=root  # The username for the database
       - DB_PASSWORD=pwd  # The password for the database

@@ -33,7 +33,15 @@ export default function BookmarkDetailPanel({ bookmark, detail, loading, onClose
 
       // Try to fetch from local backend server
       try {
-        const response = await fetch(`http://localhost:8080/api/flashcards/set/${setId}`)
+        const response = await fetch(`http://localhost:8080/api/flashcards/set/${setId}`, {
+          credentials: "include", // Include cookies
+        })
+
+        if (response.status === 401) {
+          console.log("Flashcards: Unauthorized, redirecting to login...")
+          window.location.href = "http://localhost:8080/oauth2/authorization/google"
+          return
+        }
 
         // Check if response is JSON
         const contentType = response.headers.get("content-type")
@@ -41,34 +49,41 @@ export default function BookmarkDetailPanel({ bookmark, detail, loading, onClose
           const data = await response.json()
           setFlashcards(data)
           return
+        } else if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
         }
       } catch (apiError) {
-        console.warn("Local API not available, using mock data:", apiError)
+        if (apiError instanceof Error && apiError.message.includes("401")) {
+          console.log("Flashcards: Unauthorized (caught), redirecting to login...")
+          window.location.href = "http://localhost:8080/oauth2/authorization/google"
+          return
+        } else {
+          console.warn("Flashcards: Local API not available or error, using mock data:", apiError)
+          // Fallback to mock data if API fails or returns non-JSON
+          console.info("Using mock flashcard data for development")
+          // Mock data based on the API documentation
+          const mockFlashcards = [
+            {
+              id: 101,
+              question: "What is OAuth2?",
+              answer: "An authorization framework enabling applications to obtain limited access to user accounts.",
+            },
+            {
+              id: 102,
+              question: "Difference between Authentication and Authorization?",
+              answer: "Authentication verifies identity, Authorization verifies permissions.",
+            },
+            {
+              id: 103,
+              question: "What is a JWT token?",
+              answer:
+                "JSON Web Token is a compact, URL-safe means of representing claims to be transferred between two parties.",
+            },
+          ]
+
+          setFlashcards(mockFlashcards)
+        }
       }
-
-      // Fallback to mock data if API fails or returns non-JSON
-      console.info("Using mock flashcard data for development")
-      // Mock data based on the API documentation
-      const mockFlashcards = [
-        {
-          id: 101,
-          question: "What is OAuth2?",
-          answer: "An authorization framework enabling applications to obtain limited access to user accounts.",
-        },
-        {
-          id: 102,
-          question: "Difference between Authentication and Authorization?",
-          answer: "Authentication verifies identity, Authorization verifies permissions.",
-        },
-        {
-          id: 103,
-          question: "What is a JWT token?",
-          answer:
-            "JSON Web Token is a compact, URL-safe means of representing claims to be transferred between two parties.",
-        },
-      ]
-
-      setFlashcards(mockFlashcards)
     } catch (err) {
       console.error("Error in flashcard handling:", err)
     } finally {
@@ -83,7 +98,15 @@ export default function BookmarkDetailPanel({ bookmark, detail, loading, onClose
 
       // Try to fetch from local backend server
       try {
-        const response = await fetch(`http://localhost:8080/api/quizzes/set/${setId}`)
+        const response = await fetch(`http://localhost:8080/api/quizzes/set/${setId}`, {
+          credentials: "include", // Include cookies
+        })
+
+        if (response.status === 401) {
+          console.log("Quiz: Unauthorized, redirecting to login...")
+          window.location.href = "http://localhost:8080/oauth2/authorization/google"
+          return
+        }
 
         // Check if response is JSON
         const contentType = response.headers.get("content-type")
@@ -91,41 +114,48 @@ export default function BookmarkDetailPanel({ bookmark, detail, loading, onClose
           const data = await response.json()
           setQuizSet(data)
           return
+        } else if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
         }
       } catch (apiError) {
-        console.warn("Local API not available, using mock data:", apiError)
-      }
-
-      // Fallback to mock data if API fails or returns non-JSON
-      console.info("Using mock quiz data for development")
-      // Mock data based on the API documentation
-      const mockQuizSet = {
-        id: 5,
-        name: "Web Security Quiz",
-        questions: [
-          {
-            id: 201,
-            text: "Which HTTP method is typically used for retrieving data?",
-            choices: [
-              { id: 301, text: "POST", isCorrect: false },
-              { id: 302, text: "GET", isCorrect: true },
-              { id: 303, text: "PUT", isCorrect: false },
-              { id: 304, text: "DELETE", isCorrect: false },
+        if (apiError instanceof Error && apiError.message.includes("401")) {
+          console.log("Quiz: Unauthorized (caught), redirecting to login...")
+          window.location.href = "http://localhost:8080/oauth2/authorization/google"
+          return
+        } else {
+          console.warn("Quiz: Local API not available or error, using mock data:", apiError)
+          // Fallback to mock data if API fails or returns non-JSON
+          console.info("Using mock quiz data for development")
+          // Mock data based on the API documentation
+          const mockQuizSet = {
+            id: 5,
+            name: "Web Security Quiz",
+            questions: [
+              {
+                id: 201,
+                text: "Which HTTP method is typically used for retrieving data?",
+                choices: [
+                  { id: 301, text: "POST", isCorrect: false },
+                  { id: 302, text: "GET", isCorrect: true },
+                  { id: 303, text: "PUT", isCorrect: false },
+                  { id: 304, text: "DELETE", isCorrect: false },
+                ],
+              },
+              {
+                id: 202,
+                text: "What does CSRF stand for?",
+                choices: [
+                  { id: 305, text: "Cross-Site Reference Forgery", isCorrect: false },
+                  { id: 306, text: "Client-Side Request Forgery", isCorrect: false },
+                  { id: 307, text: "Cross-Site Request Forgery", isCorrect: true },
+                ],
+              },
             ],
-          },
-          {
-            id: 202,
-            text: "What does CSRF stand for?",
-            choices: [
-              { id: 305, text: "Cross-Site Reference Forgery", isCorrect: false },
-              { id: 306, text: "Client-Side Request Forgery", isCorrect: false },
-              { id: 307, text: "Cross-Site Request Forgery", isCorrect: true },
-            ],
-          },
-        ],
-      }
+          }
 
-      setQuizSet(mockQuizSet)
+          setQuizSet(mockQuizSet)
+        }
+      }
     } catch (err) {
       console.error("Error in quiz handling:", err)
     } finally {
@@ -193,7 +223,12 @@ export default function BookmarkDetailPanel({ bookmark, detail, loading, onClose
                           key={set.id}
                           className="flex items-center justify-between rounded-md border p-3 dark:border-gray-700"
                         >
-                          <span>{set.name}</span>
+                          <span>
+                            {set.name}
+                            {set.numberOfFlashcards !== undefined && (
+                              <span className="ml-2 text-xs text-muted-foreground">({set.numberOfFlashcards} cards)</span>
+                            )}
+                          </span>
                           <Button size="sm" onClick={() => handleViewFlashcards(set.id)}>
                             View
                           </Button>
@@ -224,7 +259,12 @@ export default function BookmarkDetailPanel({ bookmark, detail, loading, onClose
                           key={set.id}
                           className="flex items-center justify-between rounded-md border p-3 dark:border-gray-700"
                         >
-                          <span>{set.name}</span>
+                          <span>
+                            {set.name}
+                            {set.questions && (
+                              <span className="ml-2 text-xs text-muted-foreground">({set.questions.length} questions)</span>
+                            )}
+                          </span>
                           <Button size="sm" onClick={() => handleStartQuiz(set.id)}>
                             Start Quiz
                           </Button>

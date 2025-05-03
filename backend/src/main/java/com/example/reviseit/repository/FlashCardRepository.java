@@ -15,4 +15,10 @@ public interface FlashCardRepository extends JpaRepository<FlashCard, Long> {
     @Param("flashCardSetId") Long flashCardSetId,
     @Param("email") String email
   );
+
+  // Count flashcards by user email
+  @Query(
+    "SELECT count(fc) FROM FlashCard fc JOIN fc.flashCardSet fcs JOIN fcs.bookmark b JOIN b.user u WHERE u.email = :email"
+  )
+  long countByUserEmail(@Param("email") String email);
 }

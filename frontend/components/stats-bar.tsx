@@ -20,50 +20,39 @@ export default function StatsBar() {
     const fetchStats = async () => {
       try {
         setLoading(true)
+        setError(null) // Clear previous errors
 
-        let bookmarksCount = 0
+        // Fetch stats from the backend
+        const statsResponse = await fetch("http://localhost:8080/api/bookmarks/stats", {
+          credentials: "include", // Include cookies
+        })
 
-        // Try to fetch bookmarks from local backend server
-        try {
-          const bookmarksResponse = await fetch("http://localhost:8080/api/bookmarks")
-
-          // Check if response is JSON
-          const contentType = bookmarksResponse.headers.get("content-type")
-          if (contentType && contentType.includes("application/json") && bookmarksResponse.ok) {
-            const bookmarksData = await bookmarksResponse.json()
-            bookmarksCount = bookmarksData.length
-          } else {
-            // Use mock data if API fails
-            bookmarksCount = 3 // Mock count
-          }
-        } catch (apiError) {
-          console.warn("Local API not available, using mock data:", apiError)
-          bookmarksCount = 3 // Mock count if API fails
+        if (statsResponse.status === 401) {
+          console.log("StatsBar: Unauthorized, redirecting to login...")
+          window.location.href = "http://localhost:8080/oauth2/authorization/google"
+          return
         }
 
-        // For flashcards and quizzes, we'd need to aggregate from all sets
-        // This is a simplified version - in a real app, you might have dedicated endpoints
+        if (!statsResponse.ok) {
+          throw new Error(`HTTP error! status: ${statsResponse.status}`)
+        }
 
-        // Simulate flashcard count (in a real app, you'd fetch all sets and count cards)
-        const flashcardsCount = 24 // Placeholder
+        const statsData = await statsResponse.json()
 
-        // Simulate quiz questions count (in a real app, you'd fetch all sets and count questions)
-        const quizzesCount = 15 // Placeholder
-
+        // Update state with fetched data
         setStats({
-          bookmarks: bookmarksCount,
-          flashcards: flashcardsCount,
-          quizzes: quizzesCount,
+          bookmarks: statsData.totalBookmarks,
+          flashcards: statsData.totalFlashcards,
+          quizzes: statsData.totalQuizQuestions, // Assuming the DTO field is totalQuizQuestions
         })
       } catch (err) {
-        console.error("Error in stats handling:", err)
-        setError("Failed to load statistics. Using default values.")
-
-        // Set default values even if there's an error
+        console.error("Error fetching stats:", err)
+        setError("Failed to load statistics. Displaying default values.")
+        // Set default/fallback values on error
         setStats({
-          bookmarks: 3,
-          flashcards: 24,
-          quizzes: 15,
+          bookmarks: 0,
+          flashcards: 0,
+          quizzes: 0,
         })
       } finally {
         setLoading(false)

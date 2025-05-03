@@ -16,4 +16,7 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
 
   // Find a bookmark by user email and website URL
   Optional<Bookmark> findByUserEmailAndWebsite(String email, String website);
+
+  // Count bookmarks by user email
+  long countByUserEmail(String email);
 }

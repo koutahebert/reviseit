@@ -21,35 +21,51 @@ export default function DomainFilter({ onSelectDomain, onReset }: DomainFilterPr
 
   const fetchDomains = async () => {
     try {
-      setLoading(true)
+      setLoading(true);
 
       // Try to fetch from local backend server
       try {
-        const response = await fetch("http://localhost:8080/api/bookmarks/domains")
+        const response = await fetch("http://localhost:8080/api/bookmarks/domains", {
+          credentials: "include", // Include cookies
+        });
+
+        if (response.status === 401) {
+          console.log("DomainFilter: Unauthorized, redirecting to login...");
+          window.location.href = "http://localhost:8080/oauth2/authorization/google";
+          return;
+        }
 
         // Check if response is JSON by looking at content-type header
-        const contentType = response.headers.get("content-type")
+        const contentType = response.headers.get("content-type");
         if (contentType && contentType.includes("application/json") && response.ok) {
-          const data = await response.json()
-          setDomains(data)
-          return
+          const data = await response.json();
+          setDomains(data);
+          setError(null); // Clear error on success
+          return;
+        } else if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
       } catch (apiError) {
-        console.warn("Local API not available, using mock data:", apiError)
+        if (apiError instanceof Error && apiError.message.includes("401")) {
+          console.log("DomainFilter: Unauthorized (caught), redirecting to login...");
+          window.location.href = "http://localhost:8080/oauth2/authorization/google";
+          return;
+        } else {
+          console.warn("DomainFilter: Local API not available or other error, using mock data:", apiError);
+          // Fallback to mock data if API fails or returns non-JSON
+          console.info("Using mock domain data for development");
+          // Mock data based on the API documentation
+          const mockDomains = ["spring.io", "reactjs.org", "baeldung.com"];
+          setDomains(mockDomains);
+        }
       }
-
-      // Fallback to mock data if API fails or returns non-JSON
-      console.info("Using mock domain data for development")
-      // Mock data based on the API documentation
-      const mockDomains = ["spring.io", "reactjs.org", "baeldung.com"]
-      setDomains(mockDomains)
     } catch (err) {
-      console.error("Error in domain handling:", err)
-      setError("Failed to load domains. Using default values.")
+      console.error("Error in domain handling:", err);
+      setError("Failed to load domains. Using default values.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleDomainClick = (domain: string) => {
     setActiveDomain(domain)

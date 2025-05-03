@@ -1,47 +1,158 @@
 package com.example.reviseit.config;
 
+import com.example.reviseit.model.User; // Import User model
+import com.example.reviseit.repository.UserRepository; // Import UserRepository
+import com.example.reviseit.service.UserService; // Import UserService
+import jakarta.annotation.PostConstruct; // Import PostConstruct
+import java.util.Arrays;
+import org.springframework.beans.factory.annotation.Autowired; // Import Autowired
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
-import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest; // Import OAuth2UserRequest
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserService; // Import OAuth2UserService
+import org.springframework.security.oauth2.core.OAuth2AuthenticationException; // Import OAuth2AuthenticationException
+import org.springframework.security.oauth2.core.OAuth2Error; // Import OAuth2Error
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User; // Import DefaultOAuth2User
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @EnableWebSecurity
 @Configuration
 @EnableAsync
 public class SecurityConfig {
 
+  private final UserService userService;
+
+  @Autowired
+  public SecurityConfig(UserService userService) {
+    this.userService = userService;
+    System.out.println(
+      "SecurityConfig CONSTRUCTOR: This config is being used!"
+    );
+  }
+
+  // Add PostConstruct method for logging
+  @PostConstruct
+  public void checkUserServiceInjection() {
+    if (this.userService == null) {
+      System.err.println(
+        "!!! SecurityConfig PostConstruct: userService is NULL !!!"
+      );
+    } else {
+      System.out.println(
+        "+++ SecurityConfig PostConstruct: userService is successfully injected. +++"
+      );
+    }
+  }
+
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http)
-    throws Exception {
+    throws Exception { // Removed injected parameters
+    System.out.println("--- Configuring SecurityFilterChain ---"); // Log before oauth2Login
     http
+      .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Apply CORS globally
       .authorizeHttpRequests(auth ->
         auth // Use authorizeHttpRequests instead of authorizeRequests
-          .requestMatchers("/api/bookmarks/**")
-          .authenticated() // Use requestMatchers instead of antMatchers
+          .requestMatchers("/api/**") // Apply authentication to all /api/** paths
+          .authenticated()
           .anyRequest()
           .permitAll()
       )
-      .oauth2Login(oauth2 ->
-        oauth2.userInfoEndpoint(userInfo ->
-          userInfo.userService(oauth2UserService())
+      .exceptionHandling(e ->
+        e.defaultAuthenticationEntryPointFor(
+          new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED), // Return 401 for API requests
+          new AntPathRequestMatcher("/api/**")
         )
       )
+      .oauth2Login(oauth2 -> {
+        System.out.println("--- Applying .oauth2Login() configuration ---");
+        oauth2
+          .userInfoEndpoint(userInfo ->
+            userInfo.userService(customOAuth2UserService())
+          )
+          .successHandler(oauth2LoginSuccessHandler());
+      })
       .csrf(AbstractHttpConfigurer::disable);
+    System.out.println("--- SecurityFilterChain configuration complete ---"); // Log after configuration
     return http.build();
   }
 
   @Bean
-  public OAuth2UserService<org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest, OAuth2User> oauth2UserService() {
+  public OAuth2UserService<OAuth2UserRequest, OAuth2User> customOAuth2UserService() {
     return userRequest -> {
+      System.out.println("CustomOAuth2UserService: Called!");
       DefaultOAuth2UserService delegate = new DefaultOAuth2UserService();
-        // email attribute guaranteed by Google
-      return delegate.loadUser(userRequest);
+      OAuth2User oauth2User = delegate.loadUser(userRequest);
+      String email = oauth2User.getAttribute("email");
+      if (email == null) {
+        System.err.println("CustomOAuth2UserService: Email attribute is null!");
+        throw new OAuth2AuthenticationException("Email attribute missing");
+      }
+      System.out.println(
+        "CustomOAuth2UserService: Creating or finding user for: " + email
+      );
+      userService.findOrCreateUser(email);
+      return oauth2User;
+    };
+  }
+
+  @Bean
+  CorsConfigurationSource corsConfigurationSource() {
+    CorsConfiguration configuration = new CorsConfiguration();
+    configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000")); // Allow frontend origin
+    configuration.setAllowedMethods(
+      Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS")
+    ); // Allow common methods
+    configuration.setAllowedHeaders(
+      Arrays.asList("Authorization", "Cache-Control", "Content-Type")
+    );
+    configuration.setAllowCredentials(true); // Allow credentials
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", configuration); // Apply CORS to all paths ("/**")
+    return source;
+  }
+
+  @Bean
+  public AuthenticationSuccessHandler oauth2LoginSuccessHandler() {
+    return (request, response, authentication) -> {
+      System.out.println("oauth2LoginSuccessHandler: called!");
+      // Extract email from authentication principal
+      if (
+        authentication != null &&
+        authentication.getPrincipal() instanceof org.springframework.security.oauth2.core.user.OAuth2User oauth2User
+      ) {
+        String email = oauth2User.getAttribute("email");
+        if (email != null) {
+          System.out.println(
+            "oauth2LoginSuccessHandler: Creating or finding user for: " + email
+          );
+          userService.findOrCreateUser(email);
+        } else {
+          System.err.println(
+            "oauth2LoginSuccessHandler: Email attribute is null!"
+          );
+        }
+      } else {
+        System.err.println(
+          "oauth2LoginSuccessHandler: Principal is not OAuth2User!"
+        );
+      }
+      new SimpleUrlAuthenticationSuccessHandler("http://localhost:3000")
+        .onAuthenticationSuccess(request, response, authentication);
     };
   }
 }

@@ -9,4 +9,5 @@ public class FlashCardSetDTO {
   private Long id; // Add ID field
   private String name;
   private List<FlashCardDTO> cards;
+  private Integer numberOfFlashcards; // Add count field
 }

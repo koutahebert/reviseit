@@ -2,6 +2,7 @@ package com.example.reviseit.controller; // Assuming you have a controller packa
 
 import com.example.reviseit.dto.BookmarkDTO;
 import com.example.reviseit.dto.BookmarkDetailDTO;
+import com.example.reviseit.dto.StatsDTO; // Import StatsDTO
 import com.example.reviseit.service.BookmarkService;
 import java.util.List;
 import java.util.Map;
@@ -99,5 +100,15 @@ public class BookmarkController {
       url
     );
     return ResponseEntity.ok(bookmarkDetail);
+  }
+
+  // Endpoint to get user statistics
+  @GetMapping("/stats")
+  public ResponseEntity<StatsDTO> getUserStats(
+    @AuthenticationPrincipal OAuth2User principal
+  ) {
+    String email = getUserEmail(principal);
+    StatsDTO stats = bookmarkService.getUserStats(email);
+    return ResponseEntity.ok(stats);
   }
 }

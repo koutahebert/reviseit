@@ -83,13 +83,11 @@ public class GenerationService {
 
     // Persist empty containers immediately
     FlashCardSet flashSet = new FlashCardSet();
-    flashSet.setName(req.getFlashcardSetName());
     flashSet.setBookmark(bm);
     flashSet = flashSetRepo.save(flashSet);
     log.info("Created initial FlashCardSet with ID: {}", flashSet.getId());
 
     QuizSet quizSet = new QuizSet();
-    quizSet.setName(req.getQuizSetName());
     quizSet.setFlashCardSet(flashSet);
     quizSet = quizSetRepo.save(quizSet);
     log.info("Created initial QuizSet with ID: {}", quizSet.getId());

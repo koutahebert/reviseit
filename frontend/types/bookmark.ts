@@ -10,6 +10,7 @@ export interface BookmarkDTO {
 export interface FlashCardSetDTO {
   id: number
   name: string
+  numberOfFlashcards?: number // Add optional count field
 }
 
 export interface QuizSetDTO {
