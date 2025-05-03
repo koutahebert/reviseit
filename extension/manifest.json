@@ -1,0 +1,17 @@
+{
+    "manifest_version": 3,
+    "name": "ReviseIt",
+    "version": "1.0",
+    "description": "Make bookmarks, generate flashcards, take quizzes, and ReviseIt!",
+    "permissions": [
+        "tabs",
+        "scripting"
+    ],
+    "action": {
+        "default_popup": "popup.html",
+        "default_title": "ReviseIt"
+    },
+    "icons": {
+        "512": "icons/icon.png"
+    }
+}
