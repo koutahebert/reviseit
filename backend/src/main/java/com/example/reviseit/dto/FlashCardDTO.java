@@ -4,6 +4,8 @@ import lombok.Data;
 
 @Data
 public class FlashCardDTO {
-    private String question;
-    private String answer;
+
+  private Long id; // Add ID field
+  private String question;
+  private String answer;
 }

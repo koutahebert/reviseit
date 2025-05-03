@@ -1,11 +1,12 @@
 package com.example.reviseit.dto;
 
-import lombok.Data;
-
 import java.util.List;
+import lombok.Data;
 
 @Data
 public class QuestionDTO {
-    private String text;
-    private List<ChoiceDTO> choices;
+
+  private Long id;
+  private String text;
+  private List<ChoiceDTO> choices;
 }

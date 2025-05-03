@@ -4,9 +4,9 @@ import java.util.List;
 import lombok.Data;
 
 @Data
-public class FlashCardSetDTO {
+public class QuizSetDTO {
 
-  private Long id; // Add ID field
+  private Long id;
   private String name;
-  private List<FlashCardDTO> cards;
+  private List<QuestionDTO> questions;
 }

@@ -4,6 +4,8 @@ import lombok.Data;
 
 @Data
 public class ChoiceDTO {
-    private String text;
-    private Boolean isCorrect;
+
+  private Long id;
+  private String text;
+  private Boolean isCorrect;
 }
