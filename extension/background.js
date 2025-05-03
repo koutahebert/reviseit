@@ -31,3 +31,20 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     });
   }
 });
+
+chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => {
+  if (message.type === "SAVE_TOKEN") {
+    const token = message.token;
+
+    if (token) {
+      chrome.storage.local.set({ authToken: token }, () => {
+        console.log("Auth token saved");
+        sendResponse({ success: true });
+      });
+
+      return true; // Required for async sendResponse
+    } else {
+      sendResponse({ success: false, error: "No token provided" });
+    }
+  }
+});

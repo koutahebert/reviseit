@@ -19,5 +19,8 @@
   },
   "icons": {
     "512": "icons/icon.png"
+  },
+  "externally_connectable": {
+  "matches": ["https://reviseit.com/*"]
   }
 }
