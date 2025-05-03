@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>ReviseIt</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 10px;
+        max-width: 400px; /* Increased width for the popup */
+      }
+      .header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0px; /* Reduced gap between title and horizontal bar */
+      }
+      .header img {
+        width: 24px;
+        height: 24px;
+        margin-right: 5px;
+      }
+      .header h1 {
+        margin: 0;
+      }
+      .header .highlight {
+        color: #007BFF; /* Change this to your desired color */
+      }
+      .domain {
+        font-size: 14px;
+        margin-bottom: 10px;
+        font-style: italic; /* Makes the text italic */
+        color: #888888; /* Light gray color */
+      }
+      hr {
+        border: none;
+        border-top: 1px solid #ccc;
+        margin: 0; /* Removed extra margin */
+        width: 100%; /* Ensures it spans the full width */
+      }
+      .buttons {
+        display: flex;
+        justify-content: space-between;
+        gap: 15px; /* Added spacing between buttons */
+      }
+      .buttons img {
+        width: 50px;
+        height: 50px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <img src="icons/icon.png" alt="Extension Logo" />
+      <h1>Revise<span class="highlight">It</span></h1>
+    </div>
+    <hr />
+    <div class="domain" id="domain">Loading...</div>
+    <div class="buttons">
+      <img src="icons/go.png" alt="Go Button" id="goBtn" />
+      <img src="icons/cards.png" alt="Cards Button" id="cardsBtn" />
+      <img src="icons/bookmark.png" alt="Bookmark Button" id="bookmarkBtn" />
+    </div>
+    <script src="fetchDomain.js"></script>
+    <script src="popup.js"></script>
+  </body>
+</html>

@@ -2,15 +2,19 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import Image from "next/image" // Import the Next.js Image component
 import { Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/theme-toggle"
 
 // Define the text logo component inline or separately if preferred
 const Logo = () => (
-  <span className="text-4xl font-bold tracking-tighter">
-    Revise<span className="text-blue-500 dark:text-blue-400">It</span>
-  </span>
+  <div className="flex items-center space-x-2">
+    <Image src="/icon.png" alt="ReviseIt Logo" width={30} height={30} />
+    <h1 className="text-4xl font-bold tracking-tighter">
+      Revise<span className="text-blue-500 dark:text-blue-400">It</span>
+    </h1>
+  </div>
 )
 
 const navLinks = [

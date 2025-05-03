@@ -5,7 +5,8 @@ import type { BookmarkDTO, BookmarkDetailDTO, FlashCardDTO, QuizSetDTO } from "@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
-import { Loader2, X, ExternalLink, BookOpen, FileQuestion } from "lucide-react"
+import { Loader2, X, ExternalLink } from "lucide-react"
+import Image from "next/image"
 import FlashcardList from "@/components/flashcard-list"
 import QuizView from "@/components/quiz-view"
 
@@ -189,11 +190,11 @@ export default function BookmarkDetailPanel({ bookmark, detail, loading, onClose
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2 tabs-list dark:border-gray-700">
             <TabsTrigger value="flashcards" className="flex items-center gap-1">
-              <BookOpen className="h-3 w-3" />
+              <Image src="/cards.png" alt="Flashcards Icon" width={24} height={24} />
               Flashcards
             </TabsTrigger>
             <TabsTrigger value="quizzes" className="flex items-center gap-1">
-              <FileQuestion className="h-3 w-3" />
+              <Image src="/bulb.png" alt="Quiz Questions Icon" width={24} height={24} />
               Quizzes
             </TabsTrigger>
           </TabsList>
