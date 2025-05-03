@@ -1,10 +1,9 @@
 "use client"
 
 import type React from "react"
-
 import { useEffect, useState } from "react"
+import Image from "next/image" // Import the Next.js Image component
 import { Card, CardContent } from "@/components/ui/card"
-import { Bookmark, BookOpen, FileQuestion } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 
 export default function StatsBar() {
@@ -41,9 +40,6 @@ export default function StatsBar() {
           bookmarksCount = 3 // Mock count if API fails
         }
 
-        // For flashcards and quizzes, we'd need to aggregate from all sets
-        // This is a simplified version - in a real app, you might have dedicated endpoints
-
         // Simulate flashcard count (in a real app, you'd fetch all sets and count cards)
         const flashcardsCount = 24 // Placeholder
 
@@ -76,15 +72,20 @@ export default function StatsBar() {
   return (
     <section className="container py-8">
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <StatCard icon={<Bookmark className="h-6 w-6" />} title="Bookmarks" value={stats.bookmarks} loading={loading} />
         <StatCard
-          icon={<BookOpen className="h-6 w-6" />}
+          icon={<Image src="/bookmark.png" alt="Bookmarks Icon" width={24} height={24} />}
+          title="Bookmarks"
+          value={stats.bookmarks}
+          loading={loading}
+        />
+        <StatCard
+          icon={<Image src="/cards.png" alt="Flashcards Icon" width={24} height={24} />}
           title="Flashcards"
           value={stats.flashcards}
           loading={loading}
         />
         <StatCard
-          icon={<FileQuestion className="h-6 w-6" />}
+          icon={<Image src="/bulb.png" alt="Quiz Questions Icon" width={24} height={24} />}
           title="Quiz Questions"
           value={stats.quizzes}
           loading={loading}
