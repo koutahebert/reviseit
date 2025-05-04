@@ -29,7 +29,9 @@ public class CustomOAuth2SuccessHandler
     String email = oAuth2User.getAttribute("email");
     String token = jwtUtil.generateToken(email);
     // Use the default Chrome extension redirect URI for OAuth2
-    String redirectUrl = "https://hbmgdmnkggoanmngdhjkanbpnjnhjgfe.chromiumapp.org/?token=" + token;
+    String redirectUrl =
+      "https://hbmgdmnkggoanmngdhjkanbpnjnhjgfe.chromiumapp.org/?token=" +
+      token;
     response.sendRedirect(redirectUrl);
   }
 }
