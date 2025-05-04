@@ -10,5 +10,5 @@ import lombok.Data;
 public class GenerateRequestDTO {
 
   @NotEmpty(message = "Source text blocks cannot be empty")
-  private List<String> sourceBlocks; // Renamed from chunks, added validation
+  private String text; // Renamed from chunks, added validation
 }
