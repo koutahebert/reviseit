@@ -18,11 +18,6 @@ export default function Hero() {
               Turn your bookmarks into flashcards and quizzes
             </p>
           </div>
-          <div className="space-x-4">
-            <Button asChild size="lg" className="px-8">
-              <Link href="/signup">Get Started</Link>
-            </Button>
-          </div>
         </div>
       </div>
     </section>

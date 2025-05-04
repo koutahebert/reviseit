@@ -6,6 +6,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Base64;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -16,6 +18,9 @@ public class CustomOAuth2SuccessHandler
   implements AuthenticationSuccessHandler {
 
   private final JwtUtil jwtUtil;
+
+  @Value("${extension.id}")
+  private String ID;
 
   public CustomOAuth2SuccessHandler(JwtUtil jwtUtil) {
     this.jwtUtil = jwtUtil;
@@ -52,7 +57,7 @@ public class CustomOAuth2SuccessHandler
         token;
     } else {
       redirectUrl =
-        "https://hbmgdmnkggoanmngdhjkanbpnjnhjgfe.chromiumapp.org/?token=" +
+        "https://" + ID + ".chromiumapp.org/?token=" +
         token;
     }
     response.sendRedirect(redirectUrl);
