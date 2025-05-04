@@ -6,7 +6,8 @@
   "permissions": [
     "tabs",
     "scripting",
-    "storage"
+    "storage",
+    "identity"
   ],
   "host_permissions": [
     "<all_urls>"
@@ -22,6 +23,9 @@
     "512": "icons/icon.png"
   },
   "externally_connectable": {
-  "matches": ["https://reviseit.com/*"]
+    "matches": [
+      "https://reviseit.com/*",
+      "http://localhost:8080/*"
+    ]
   }
 }

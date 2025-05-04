@@ -2,6 +2,8 @@ package com.example.reviseit.config;
 
 import com.example.reviseit.model.User; // Import User model
 import com.example.reviseit.repository.UserRepository; // Import UserRepository
+import com.example.reviseit.security.CustomOAuth2SuccessHandler; // Import CustomOAuth2SuccessHandler
+import com.example.reviseit.security.JwtAuthenticationFilter; // Import JwtAuthenticationFilter
 import com.example.reviseit.service.UserService; // Import UserService
 import jakarta.annotation.PostConstruct; // Import PostConstruct
 import java.util.Arrays;
@@ -24,7 +26,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -36,10 +38,18 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
 
   private final UserService userService;
+  private final CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
+  private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
   @Autowired
-  public SecurityConfig(UserService userService) {
+  public SecurityConfig(
+    UserService userService,
+    CustomOAuth2SuccessHandler customOAuth2SuccessHandler,
+    JwtAuthenticationFilter jwtAuthenticationFilter
+  ) {
     this.userService = userService;
+    this.customOAuth2SuccessHandler = customOAuth2SuccessHandler;
+    this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     System.out.println(
       "SecurityConfig CONSTRUCTOR: This config is being used!"
     );
@@ -72,6 +82,10 @@ public class SecurityConfig {
           .anyRequest()
           .permitAll()
       )
+      .addFilterBefore(
+        jwtAuthenticationFilter,
+        UsernamePasswordAuthenticationFilter.class
+      )
       .exceptionHandling(e ->
         e.defaultAuthenticationEntryPointFor(
           new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED), // Return 401 for API requests
@@ -84,7 +98,7 @@ public class SecurityConfig {
           .userInfoEndpoint(userInfo ->
             userInfo.userService(customOAuth2UserService())
           )
-          .successHandler(oauth2LoginSuccessHandler());
+          .successHandler(customOAuth2SuccessHandler);
       })
       .csrf(AbstractHttpConfigurer::disable);
     System.out.println("--- SecurityFilterChain configuration complete ---"); // Log after configuration
@@ -124,35 +138,5 @@ public class SecurityConfig {
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", configuration); // Apply CORS to all paths ("/**")
     return source;
-  }
-
-  @Bean
-  public AuthenticationSuccessHandler oauth2LoginSuccessHandler() {
-    return (request, response, authentication) -> {
-      System.out.println("oauth2LoginSuccessHandler: called!");
-      // Extract email from authentication principal
-      if (
-        authentication != null &&
-        authentication.getPrincipal() instanceof org.springframework.security.oauth2.core.user.OAuth2User oauth2User
-      ) {
-        String email = oauth2User.getAttribute("email");
-        if (email != null) {
-          System.out.println(
-            "oauth2LoginSuccessHandler: Creating or finding user for: " + email
-          );
-          userService.findOrCreateUser(email);
-        } else {
-          System.err.println(
-            "oauth2LoginSuccessHandler: Email attribute is null!"
-          );
-        }
-      } else {
-        System.err.println(
-          "oauth2LoginSuccessHandler: Principal is not OAuth2User!"
-        );
-      }
-      new SimpleUrlAuthenticationSuccessHandler("http://localhost:3000")
-        .onAuthenticationSuccess(request, response, authentication);
-    };
   }
 }
