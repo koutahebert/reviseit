@@ -5,7 +5,8 @@
   "description": "Make bookmarks, generate flashcards, take quizzes, and ReviseIt!",
   "permissions": [
     "tabs",
-    "scripting"
+    "scripting",
+    "storage"
   ],
   "host_permissions": [
     "<all_urls>"
