@@ -2,6 +2,7 @@ package com.example.reviseit.config;
 
 import com.example.reviseit.model.User; // Import User model
 import com.example.reviseit.repository.UserRepository; // Import UserRepository
+import com.example.reviseit.security.CustomAuthorizationRequestResolver; // Import CustomAuthorizationRequestResolver
 import com.example.reviseit.security.CustomOAuth2SuccessHandler; // Import CustomOAuth2SuccessHandler
 import com.example.reviseit.security.JwtAuthenticationFilter; // Import JwtAuthenticationFilter
 import com.example.reviseit.service.UserService; // Import UserService
@@ -15,9 +16,11 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository; // Import ClientRegistrationRepository
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest; // Import OAuth2UserRequest
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService; // Import OAuth2UserService
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestResolver; // Import OAuth2AuthorizationRequestResolver
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException; // Import OAuth2AuthenticationException
 import org.springframework.security.oauth2.core.OAuth2Error; // Import OAuth2Error
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User; // Import DefaultOAuth2User
@@ -70,8 +73,10 @@ public class SecurityConfig {
   }
 
   @Bean
-  public SecurityFilterChain securityFilterChain(HttpSecurity http)
-    throws Exception { // Removed injected parameters
+  public SecurityFilterChain securityFilterChain(
+    HttpSecurity http,
+    ClientRegistrationRepository clientRegistrationRepository
+  ) throws Exception {
     System.out.println("--- Configuring SecurityFilterChain ---"); // Log before oauth2Login
     http
       .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Apply CORS globally
@@ -94,7 +99,15 @@ public class SecurityConfig {
       )
       .oauth2Login(oauth2 -> {
         System.out.println("--- Applying .oauth2Login() configuration ---");
+        // Use custom resolver to preserve redirect_uri
+        OAuth2AuthorizationRequestResolver customResolver = new CustomAuthorizationRequestResolver(
+          clientRegistrationRepository,
+          "/oauth2/authorization"
+        );
         oauth2
+          .authorizationEndpoint(authorization ->
+            authorization.authorizationRequestResolver(customResolver)
+          )
           .userInfoEndpoint(userInfo ->
             userInfo.userService(customOAuth2UserService())
           )

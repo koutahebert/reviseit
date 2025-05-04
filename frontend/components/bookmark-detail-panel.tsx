@@ -40,7 +40,7 @@ export default function BookmarkDetailPanel({ bookmark, detail, loading, onClose
 
         if (response.status === 401) {
           console.log("Flashcards: Unauthorized, redirecting to login...")
-          window.location.href = "http://localhost:8080/oauth2/authorization/google"
+          window.location.href = "http://localhost:8080/oauth2/authorization/google?redirect_uri=http://localhost:3000"
           return
         }
 
@@ -56,7 +56,7 @@ export default function BookmarkDetailPanel({ bookmark, detail, loading, onClose
       } catch (apiError) {
         if (apiError instanceof Error && apiError.message.includes("401")) {
           console.log("Flashcards: Unauthorized (caught), redirecting to login...")
-          window.location.href = "http://localhost:8080/oauth2/authorization/google"
+          window.location.href = "http://localhost:8080/oauth2/authorization/google?redirect_uri=http://localhost:3000"
           return
         } else {
           console.warn("Flashcards: Local API not available or error, using mock data:", apiError)
@@ -105,7 +105,7 @@ export default function BookmarkDetailPanel({ bookmark, detail, loading, onClose
 
         if (response.status === 401) {
           console.log("Quiz: Unauthorized, redirecting to login...")
-          window.location.href = "http://localhost:8080/oauth2/authorization/google"
+          window.location.href = "http://localhost:8080/oauth2/authorization/google?redirect_uri=http://localhost:3000"
           return
         }
 
@@ -121,7 +121,7 @@ export default function BookmarkDetailPanel({ bookmark, detail, loading, onClose
       } catch (apiError) {
         if (apiError instanceof Error && apiError.message.includes("401")) {
           console.log("Quiz: Unauthorized (caught), redirecting to login...")
-          window.location.href = "http://localhost:8080/oauth2/authorization/google"
+          window.location.href = "http://localhost:8080/oauth2/authorization/google?redirect_uri=http://localhost:3000"
           return
         } else {
           console.warn("Quiz: Local API not available or error, using mock data:", apiError)

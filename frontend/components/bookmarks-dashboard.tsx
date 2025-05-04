@@ -32,7 +32,7 @@ export default function BookmarksDashboard() {
         if (response.status === 401) {
           // Redirect to login if unauthorized
           console.log("Unauthorized, redirecting to login...")
-          window.location.href = "http://localhost:8080/oauth2/authorization/google"
+          window.location.href = "http://localhost:8080/oauth2/authorization/google?redirect_uri=http://localhost:3000"
           return // Stop further execution
         }
 
@@ -52,7 +52,7 @@ export default function BookmarksDashboard() {
         if (apiError instanceof Error && apiError.message.includes("401")) {
           // This case might not be strictly necessary if 401 is handled above, but good for robustness
           console.log("Unauthorized (caught), redirecting to login...")
-          window.location.href = "http://localhost:8080/oauth2/authorization/google"
+          window.location.href = "http://localhost:8080/oauth2/authorization/google?redirect_uri=http://localhost:3000"
           return
         } else {
           console.warn("Local API not available or other error, using mock data:", apiError)
@@ -109,7 +109,7 @@ export default function BookmarksDashboard() {
 
         if (response.status === 401) {
           console.log("DomainFilter: Unauthorized, redirecting to login...")
-          window.location.href = "http://localhost:8080/oauth2/authorization/google"
+          window.location.href = "http://localhost:8080/oauth2/authorization/google?redirect_uri=http://localhost:3000"
           return
         }
 
@@ -126,7 +126,7 @@ export default function BookmarksDashboard() {
       } catch (apiError) {
         if (apiError instanceof Error && apiError.message.includes("401")) {
           console.log("DomainFilter: Unauthorized (caught), redirecting to login...")
-          window.location.href = "http://localhost:8080/oauth2/authorization/google"
+          window.location.href = "http://localhost:8080/oauth2/authorization/google?redirect_uri=http://localhost:3000"
           return
         } else {
           console.warn("DomainFilter: Local API not available or error, using mock data:", apiError)
@@ -192,7 +192,7 @@ export default function BookmarksDashboard() {
 
         if (response.status === 401) {
           console.log("BookmarkClick: Unauthorized, redirecting to login...")
-          window.location.href = "http://localhost:8080/oauth2/authorization/google"
+          window.location.href = "http://localhost:8080/oauth2/authorization/google?redirect_uri=http://localhost:3000"
           return
         }
 
@@ -209,7 +209,7 @@ export default function BookmarksDashboard() {
       } catch (apiError) {
         if (apiError instanceof Error && apiError.message.includes("401")) {
           console.log("BookmarkClick: Unauthorized (caught), redirecting to login...")
-          window.location.href = "http://localhost:8080/oauth2/authorization/google"
+          window.location.href = "http://localhost:8080/oauth2/authorization/google?redirect_uri=http://localhost:3000"
           return
         } else {
           console.warn("BookmarkClick: Local API not available or error, using mock data:", apiError)
@@ -247,7 +247,7 @@ export default function BookmarksDashboard() {
 
         if (response.status === 401) {
           console.log("DeleteBookmark: Unauthorized, redirecting to login...")
-          window.location.href = "http://localhost:8080/oauth2/authorization/google"
+          window.location.href = "http://localhost:8080/oauth2/authorization/google?redirect_uri=http://localhost:3000"
           return
         }
 
@@ -268,7 +268,7 @@ export default function BookmarksDashboard() {
       } catch (apiError) {
         if (apiError instanceof Error && apiError.message.includes("401")) {
           console.log("DeleteBookmark: Unauthorized (caught), redirecting to login...")
-          window.location.href = "http://localhost:8080/oauth2/authorization/google"
+          window.location.href = "http://localhost:8080/oauth2/authorization/google?redirect_uri=http://localhost:3000"
           return
         } else {
           console.warn("DeleteBookmark: Local API not available or error, using mock behavior:", apiError)
