@@ -28,16 +28,16 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center">
-        <div className="flex items-center gap-2">
+      <div className="container flex h-16 items-center justify-between">
+        {/* Left */}
+        <div className="flex flex-1 items-center">
           <Link href="/" className="flex items-center space-x-2">
-            {/* Replace Image with the text Logo component */}
             <Logo />
           </Link>
         </div>
 
-        {/* Desktop navigation - centered */}
-        <nav className="hidden md:flex md:gap-10 mx-auto justify-center">
+        {/* Center */}
+        <nav className="hidden md:flex flex-1 justify-center gap-10">
           {navLinks.map((link) => (
             <Link
               key={link.name}
@@ -49,25 +49,21 @@ export default function Header() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-2">
+        {/* Right */}
+        <div className="flex flex-1 justify-end items-center gap-2">
           <ThemeToggle className="hidden md:flex" />
-          <Button asChild className="hidden md:flex border-2 border-primary">
-            <Link href="/signup">Get Started</Link>
-          </Button>
-        </div>
-
-        {/* Mobile menu button and theme toggle */}
-        <div className="flex items-center gap-2 md:hidden">
-          <ThemeToggle />
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label="Toggle Menu"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="border-2 border-gray-300 dark:border-gray-700"
-          >
-            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-          </Button>
+          <div className="flex md:hidden">
+            <ThemeToggle />
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="Toggle Menu"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="border-2 border-gray-300 dark:border-gray-700"
+            >
+              {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </Button>
+          </div>
         </div>
       </div>
 
