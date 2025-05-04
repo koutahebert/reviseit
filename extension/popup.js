@@ -1,3 +1,5 @@
+const SITE_URL = "http://localhost:3000";
+
 document.addEventListener("DOMContentLoaded", () => {
     const bookmarkButton = document.getElementById("bookmarkBtn");
   
@@ -26,6 +28,18 @@ document.addEventListener("DOMContentLoaded", () => {
           });
         } catch (err) {
           console.error("Failed to get tab info or inject script:", err);
+        }
+      });
+    }
+  
+    const goButton = document.getElementById("goBtn");
+
+    if (goButton) {
+      goButton.addEventListener("click", async () => {
+        try {
+          window.open(SITE_URL, "_blank").focus();
+        } catch (err) {
+          console.error("Failed to jump to website: ", err);
         }
       });
     }
